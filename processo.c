@@ -28,7 +28,27 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
     //Passar como parâmetro a data atual ou usar a biblioteca time.h pra fazer isso automaticamente
 }
 
+int contarLinhas(const char* nomeArquivo){
+    FILE* f = fopen(nomeArquivo, "r");
+    if (!f) return -1;
+    char linha[512];
+    int count = 0;
+
+    fgets(linha, sizeof(linha), f); 
+    while (fgets(linha, sizeof(linha), f))
+    {
+        count++;
+    }
+    fclose(f);
+    return count;
+} // usado para quando necessário passar em parâmetros
 
 int main() {
-
+    int n = contarLinhas("processo_043_202409032338.csv");
+    if (n <= 0 )
+    {
+        printf("Erro no arquivo");
+    }
+    
+    
 }
