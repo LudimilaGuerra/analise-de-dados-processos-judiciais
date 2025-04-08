@@ -16,5 +16,6 @@ int contarPorClasse(Processo processos[], int n, int id_classe);
 int contarAssuntosUnicos(Processo processos[], int n);
 void listarMultiplosAssuntos(Processo processos[], int n);
 int calcularDiasTramitando(Processo p, const char* data_atual);
+int contarLinhas(const char* nomeArquivo);
 
 #endif
