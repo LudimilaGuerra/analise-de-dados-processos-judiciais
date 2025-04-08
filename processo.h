@@ -7,7 +7,6 @@ typedef struct {
     char data_ajuizamento[20];
     int id_classe;
     int id_assunto[10]; // assume no máximo 10 assuntos
-    int qtd_assuntos;
     int ano_eleicao;
 } Processo;
 
