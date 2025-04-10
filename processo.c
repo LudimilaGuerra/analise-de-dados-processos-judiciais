@@ -66,6 +66,47 @@ int main() {
         printf("Erro no arquivo");
     }
 
+    Processo processos[n];
+    FILE *f = fopen("processo_043_202409032338.csv", "r");
+    if (!f) return 1;
+
+    char linha[256];
+    fgets(linha, sizeof(linha), f); // Pular cabeçalho
+    
+    for (int i = 0; i < n; i++) {
+        if (!fgets(linha, sizeof(linha), f)) break;
+        
+        // Parse simplificado (ajuste conforme seu arquivo real)
+        sscanf(linha, "%d, \"%[^\"]\", %19[^,], {%d}, {%d}, %d",
+               &processos[i].id,
+               processos[i].numero,
+               processos[i].data_ajuizamento,
+               &processos[i].id_classe,
+               &processos[i].id_assunto[0],
+               &processos[i].ano_eleicao);
+    }
+    fclose(f);
+
+    ordenarPorData(processos, n);
+
+    FILE *fout = fopen("processos_ordenados_data.csv", "w");
+    if (!fout) return 1;
+
+    fprintf(fout, "\"id\", \"numero\", \"data_ajuizamento\", \"id_classe\", \"id_assunto\", \"ano_eleicao\"\n");
+    for (int i = 0; i < n; i++) {
+        fprintf(fout, "%d, \"%s\", %s, {%d}, {%d}, %d\n",
+                processos[i].id,
+                processos[i].numero,
+                processos[i].data_ajuizamento,
+                processos[i].id_classe,
+                processos[i].id_assunto[0],
+                processos[i].ano_eleicao);
+    }
+    fclose(fout);
+
+    printf("Ordenação concluída. Verifique 'processos_ordenados_data.csv'\n");
+    return 0;
+}
     
     
 }
