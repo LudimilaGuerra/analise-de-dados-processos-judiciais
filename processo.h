@@ -1,13 +1,13 @@
 #ifndef PROCESSO_H
 #define PROCESSO_H
-#define MAX_LINHA 256
+#define MAX_LINHA 512
 
 typedef struct {
     int id;
     char numero[21];
-    char data_ajuizamento[20]; // formato YYYY-MM-DD HH:MM:SS
-    char id_classe[20];
-    int id_assunto[5]; // assume no máximo 10 assuntos
+    char data_ajuizamento[23]; // formato YYYY-MM-DD HH:MM:SS
+    char id_classe[15];
+    int id_assunto[5];
     int qtd_assuntos;
     int ano_eleicao;
 } Processo;

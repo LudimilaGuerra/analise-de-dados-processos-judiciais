@@ -34,24 +34,25 @@ int particao(Processo V[], int esq, int dir){
     return i;
 }
 
-void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n){
+void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n) {
     FILE* f = fopen(nomeArquivo, "w");
     if (f == NULL) {
         printf("Erro ao criar arquivo %s.\n", nomeArquivo);
         return;
     }
 
-    //cabeçalho
+    // Cabeçalho
     fprintf(f, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
 
     for (int i = 0; i < n; i++) {
-        fprintf(f, "%d,\"%s\",%s,\"{%s}\",{",
+        // Escreve os campos do processo no formato correto
+        fprintf(f, "%d,\"%s\",\"%s\",\"{%s}\",{",
             processos[i].id,
             processos[i].numero,
             processos[i].data_ajuizamento,
             processos[i].id_classe);
 
-        //assuntos
+        // Escreve os assuntos, separados por vírgulas
         for (int j = 0; j < processos[i].qtd_assuntos; j++) {
             fprintf(f, "%d", processos[i].id_assunto[j]);
             if (j < processos[i].qtd_assuntos - 1) {
@@ -59,10 +60,11 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n){
             }
         }
 
+        // Fecha o campo de assuntos e escreve o ano de eleição
         fprintf(f, "},%d\n", processos[i].ano_eleicao);
     }
+
     fclose(f);
-    
 }
 
 
@@ -110,8 +112,7 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
 
     char linha[MAX_LINHA];
     int i = 0;
-
-    fgets(linha, MAX_LINHA, f); // Pular o cabeçalho
+    fgets(linha, MAX_LINHA, f); // Lê o cabeçalho e ignora
 
     while (fgets(linha, MAX_LINHA, f) && i < max) {
         Processo p;
@@ -121,87 +122,69 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
         token = strtok(linha, ",");
         p.id = atoi(token);
 
-        // Numero
+        // Número
         token = strtok(NULL, ",");
         limparQuebraLinha(token);
-        strncpy(p.numero, token + 1, strlen(token) - 2); // tira aspas
+        strncpy(p.numero, token + 1, strlen(token) - 2); // Remove aspas
         p.numero[strlen(token) - 2] = '\0';
 
-        // Data ajuizamento
+        // Data de ajuizamento
         token = strtok(NULL, ",");
         limparQuebraLinha(token);
-        strcpy(p.data_ajuizamento, token);
-        
-        // ID classe (entre { })
-
-        /* token = strtok(NULL, ",");
-        limparQuebraLinha(token);
-        if (token[0] == '{') {
-            // Remove as chaves { }
-            strncpy(p.id_classe, token + 1, strlen(token) - 2);
-            p.id_classe[strlen(token) - 2] = '\0';
+        if (token != NULL && strlen(token) > 0) {
+            strncpy(p.data_ajuizamento, token + 1, strlen(token) - 1); // Remove aspas
+            p.data_ajuizamento[strlen(token) + 2] = '\0';
         } else {
-            strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
-            p.id_classe[sizeof(p.id_classe) - 1] = '\0';
+            strcpy(p.data_ajuizamento, ""); // Inicializa como vazio se não houver valor
         }
- */
-token = strtok(NULL, ",");
-limparQuebraLinha(token);
 
-// Inicializa o campo como vazio
-p.id_classe[0] = '\0';
-
-if (token != NULL) {
-    // Encontra o início da chave
-    char* inicio = strchr(token, '{');
-    if (inicio) {
-        inicio++; // pula o '{'
-
-        // Encontra o fim da chave
-        char* fim = strchr(inicio, '}');
-        if (fim) {
-            int tamanho = fim - inicio;
-            if (tamanho < sizeof(p.id_classe)) {
-                strncpy(p.id_classe, inicio, tamanho);
-                p.id_classe[tamanho] = '\0';
+        // ID da classe
+        token = strtok(NULL, ",");
+        limparQuebraLinha(token);
+        p.id_classe[0] = '\0';
+        if (token != NULL && strlen(token) > 0) {
+            char* inicio = strchr(token, '{');
+            char* fim = strchr(token, '}');
+            if (inicio && fim && fim > inicio) {
+                int tamanho = fim - inicio - 1;
+                if (tamanho < sizeof(p.id_classe)) {
+                    strncpy(p.id_classe, inicio + 1, tamanho);
+                    p.id_classe[tamanho] = '\0';
+                }
             } else {
-                printf("Erro: id_classe muito grande na linha %d.\n", i + 1);
-                continue;
+                strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
+                p.id_classe[sizeof(p.id_classe) - 1] = '\0';
             }
         }
-    } else {
-        // Caso não tenha chaves, copia tudo mesmo assim
-        strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
-        p.id_classe[sizeof(p.id_classe) - 1] = '\0';
-    }
-}
 
-        // ID assunto (pode ter vários!)
+        // ID dos assuntos
         token = strtok(NULL, ",");
         p.qtd_assuntos = 0;
-
-        if (token[0] == '{') {
-            token++; // pula o {
+        if (token != NULL && token[0] == '{') {
+            token++;
             char* fim = strchr(token, '}');
-            if (fim) *fim = '\0'; // corta o }
+            if (fim) *fim = '\0';
 
             char* sub = strtok(token, ",");
-            while (sub != NULL) {
+            while (sub != NULL && p.qtd_assuntos < 10) {
                 p.id_assunto[p.qtd_assuntos++] = atoi(sub);
                 sub = strtok(NULL, ",");
             }
         }
 
-        // Ano eleição
+        // Ano da eleição
         token = strtok(NULL, ",\n");
-        p.ano_eleicao = atoi(token);
+        if (token != NULL) {
+            p.ano_eleicao = atoi(token);
+        } else {
+            p.ano_eleicao = 0; // Inicializa como 0 se não houver valor
+        }
 
-        // Adiciona ao vetor
         processos[i++] = p;
     }
 
     fclose(f);
-    return i; // número de processos lidos
+    return i;
 }
 
 void limparQuebraLinha(char* str) {
