@@ -3,8 +3,8 @@
 #include "processo.h"
 
 int main() {
-    Processo processos[MAX_PROCESSOS];
-    int n = carregarProcessos("processo_043_202409032338.csv", processos, MAX_PROCESSOS);
+    Processo processos[20000];
+    int n = carregarProcessos("processo_043_202409032338.csv", processos, 20000);
     if (n <= 0) {
         printf("Erro ao carregar os processos.\n");
         return -1;
@@ -43,9 +43,9 @@ int main() {
             printf("Processos ordenados por data. Novo arquivo criado\n");
             break;
         case 3:{
-            int id_classe;
+            char id_classe[10];
             printf("Digite o ID da classe: ");
-            scanf("%d", &id_classe);
+            scanf("%s", &id_classe);
             int count = contarPorClasse(processos, n, id_classe);
             printf("Total de processos na classe %d: %d\n", id_classe, count);
             break;

@@ -45,25 +45,11 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n){
     fprintf(f, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
 
     for (int i = 0; i < n; i++) {
-        fprintf(f, "%d,\"%s\",%s,",
-                processos[i].id,
-                processos[i].numero,
-                processos[i].data_ajuizamento);
-               
-                //id_classe
-                if(processos[i].qtd_classe == 1){
-                    fprintf(f, "{%d},", processos[i].id_classe[0]);
-                }
-                else{
-                    fprintf(f, "\"{");
-                        for (int j = 0; j < processos[i].qtd_classe; j++) {
-                            fprintf(f, "%d", processos[i].id_classe[j]);
-                            if (j < processos[i].qtd_classe - 1) {
-                                fprintf(f, ",");
-                            }
-                        }
-                    fprintf(f, "}\",");
-                }
+        fprintf(f, "%d,\"%s\",%s,\"{%s}\",{",
+            processos[i].id,
+            processos[i].numero,
+            processos[i].data_ajuizamento,
+            processos[i].id_classe);
 
         //assuntos
         for (int j = 0; j < processos[i].qtd_assuntos; j++) {
@@ -98,7 +84,7 @@ void ordenarPorData(Processo processos[], int n){
 
 
 //3. Contar quantos processos estão vinculados a um determinado “id_classe”;
-int contarPorClasse(Processo processos[], int n, int id_classe){
+int contarPorClasse(Processo processos[], int n, const char* id_classe){
 }
 
 //4. Identificar quantos “id_assuntos” constam nos processos presentes na base de dados;
@@ -115,7 +101,7 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
     //Passar como parâmetro a data atual ou usar a biblioteca time.h pra fazer isso automaticamente
 }
 
-/* int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
+int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
     FILE* f = fopen(nomeArquivo, "r");
     if (!f) {
         printf("Erro ao abrir o arquivo.\n");
@@ -128,23 +114,15 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
     fgets(linha, MAX_LINHA, f); // Pular o cabeçalho
 
     while (fgets(linha, MAX_LINHA, f) && i < max) {
-        Processo p = {0};
+        Processo p;
         char* token;
 
         // ID
         token = strtok(linha, ",");
-        if (token == NULL) {
-            printf("Erro ao processar linha %d do arquivo.\n", i + 1);
-            continue; // Pule para a próxima linha
-        }
         p.id = atoi(token);
 
         // Numero
         token = strtok(NULL, ",");
-        if (token == NULL) {
-            printf("Erro ao processar linha %d do arquivo.\n", i + 1);
-            continue; // Pule para a próxima linha
-        }
         limparQuebraLinha(token);
         strncpy(p.numero, token + 1, strlen(token) - 2); // tira aspas
         p.numero[strlen(token) - 2] = '\0';
@@ -154,47 +132,52 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
         limparQuebraLinha(token);
         strcpy(p.data_ajuizamento, token);
         
-        // ID classe (pode ter vários)
+        // ID classe (entre { })
 
-        token = strtok(NULL, ",");
-        if (token == NULL) {
-            printf("Erro ao processar linha %d do arquivo.\n", i + 1);
-            continue; // Pule para a próxima linha
+        /* token = strtok(NULL, ",");
+        limparQuebraLinha(token);
+        if (token[0] == '{') {
+            // Remove as chaves { }
+            strncpy(p.id_classe, token + 1, strlen(token) - 2);
+            p.id_classe[strlen(token) - 2] = '\0';
+        } else {
+            strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
+            p.id_classe[sizeof(p.id_classe) - 1] = '\0';
         }
-        p.qtd_classe = 0;
+ */
+token = strtok(NULL, ",");
+limparQuebraLinha(token);
 
-        if (token[0] == '"') {
-            token+=2; // pula o '{'
-            char* fim = strchr(token, '}');
-            if (fim) *fim = '\0'; // corta o '}'
+// Inicializa o campo como vazio
+p.id_classe[0] = '\0';
 
-            char* sub = strtok(token, ",");
-            while (sub != NULL && p.qtd_classe < MAX_CLASSE) {
-                p.id_classe[p.qtd_classe++] = atoi(sub);
-                sub = strtok(NULL, ",");
+if (token != NULL) {
+    // Encontra o início da chave
+    char* inicio = strchr(token, '{');
+    if (inicio) {
+        inicio++; // pula o '{'
+
+        // Encontra o fim da chave
+        char* fim = strchr(inicio, '}');
+        if (fim) {
+            int tamanho = fim - inicio;
+            if (tamanho < sizeof(p.id_classe)) {
+                strncpy(p.id_classe, inicio, tamanho);
+                p.id_classe[tamanho] = '\0';
+            } else {
+                printf("Erro: id_classe muito grande na linha %d.\n", i + 1);
+                continue;
             }
         }
-        if (p.qtd_classe >= MAX_CLASSE) {
-            printf("Erro: número de classes excede o limite na linha %d.\n", i + 1);
-            continue;
-        }
-        
-        if (p.qtd_assuntos >= MAX_ASSUNTOS) {
-            printf("Erro: número de assuntos excede o limite na linha %d.\n", i + 1);
-            continue;
-        }
-        else{
-            p.id_classe[0] = atoi(token);
-            p.qtd_classe = 1;
-        }
-        
+    } else {
+        // Caso não tenha chaves, copia tudo mesmo assim
+        strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
+        p.id_classe[sizeof(p.id_classe) - 1] = '\0';
+    }
+}
 
-        // ID assunto (pode ter vários)
+        // ID assunto (pode ter vários!)
         token = strtok(NULL, ",");
-        if (token == NULL) {
-            printf("Erro ao processar linha %d do arquivo.\n", i + 1);
-            continue; // Pule para a próxima linha
-        }
         p.qtd_assuntos = 0;
 
         if (token[0] == '{') {
@@ -211,10 +194,6 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
 
         // Ano eleição
         token = strtok(NULL, ",\n");
-        if (token == NULL) {
-            printf("Erro ao processar linha %d do arquivo.\n", i + 1);
-            continue; // Pule para a próxima linha
-        }
         p.ano_eleicao = atoi(token);
 
         // Adiciona ao vetor
@@ -223,114 +202,11 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
 
     fclose(f);
     return i; // número de processos lidos
-} */
-
-int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
-    printf("Tentando abrir o arquivo: %s\n", nomeArquivo);
-
-    FILE* f = fopen(nomeArquivo, "r");
-    if (!f) {
-        printf("Erro ao abrir o arquivo.\n");
-        return -1;
-    }
-
-    char linha[MAX_LINHA];
-    int i = 0;
-
-    // Ignorar o cabeçalho
-    fgets(linha, MAX_LINHA, f);
-
-    while (fgets(linha, MAX_LINHA, f) && i < max) {
-        Processo p = {0};
-        char* token;
-
-        // ID
-        token = strtok(linha, ",");
-        if (!token) continue;
-        p.id = atoi(token);
-
-        // Número (remover aspas)
-        token = strtok(NULL, ",");
-        if (!token) continue;
-        limparQuebraLinha(token);
-        if (token[0] == '"') token++;
-        size_t len = strlen(token);
-        if (len > 0 && token[len - 1] == '"') token[len - 1] = '\0';
-        strncpy(p.numero, token, sizeof(p.numero));
-        p.numero[sizeof(p.numero) - 1] = '\0';
-
-        // Data de ajuizamento
-        token = strtok(NULL, ",");
-        if (!token) continue;
-        limparQuebraLinha(token);
-        strncpy(p.data_ajuizamento, token, sizeof(p.data_ajuizamento));
-        p.data_ajuizamento[sizeof(p.data_ajuizamento) - 1] = '\0';
-
-        // ID Classe
-        token = strtok(NULL, ",");
-        if (!token) continue;
-        limparQuebraLinha(token);
-        p.qtd_classe = 0;
-
-        if (token[0] == '"') token++; // remove aspas externas
-        if (token[0] == '{') token++;
-
-        char* fim = strchr(token, '}');
-        if (fim) *fim = '\0';
-
-        char* sub = strtok(token, ",");
-        while (sub && p.qtd_classe < MAX_CLASSE) {
-            p.id_classe[p.qtd_classe++] = atoi(sub);
-            sub = strtok(NULL, ",");
-        }
-
-        if (p.qtd_classe >= MAX_CLASSE) {
-            printf("Erro: número de classes excede o limite na linha %d.\n", i + 1);
-            continue;
-        }
-
-        // ID Assunto
-        token = strtok(NULL, ",");
-        if (!token) continue;
-        limparQuebraLinha(token);
-        p.qtd_assuntos = 0;
-
-        if (token[0] == '"') token++;
-        if (token[0] == '{') token++;
-
-        fim = strchr(token, '}');
-        if (fim) *fim = '\0';
-
-        sub = strtok(token, ",");
-        while (sub && p.qtd_assuntos < MAX_ASSUNTOS) {
-            p.id_assunto[p.qtd_assuntos++] = atoi(sub);
-            sub = strtok(NULL, ",");
-        }
-
-        if (p.qtd_assuntos >= MAX_ASSUNTOS) {
-            printf("Erro: número de assuntos excede o limite na linha %d.\n", i + 1);
-            continue;
-        }
-
-        // Ano da eleição
-        token = strtok(NULL, ",\n");
-        if (!token) continue;
-        p.ano_eleicao = atoi(token);
-
-        // Adiciona o processo ao vetor
-        processos[i++] = p;
-    }
-
-    fclose(f);
-    return i;
 }
-
-
-
 
 void limparQuebraLinha(char* str) {
     size_t len = strlen(str);
-    while (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r' || str[len - 1] == ' ')) {
+    while (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r')) {
         str[--len] = '\0';
     }
 }
