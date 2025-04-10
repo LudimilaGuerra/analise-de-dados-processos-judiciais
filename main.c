@@ -13,7 +13,7 @@ int main() {
     printf("numero: %s\n", processos[5505].numero);
     printf("data: %s\n", processos[5505].data_ajuizamento);
     printf("classe: %s\n", processos[5505].id_classe);
-    printf("id ass: %d\n", processos[5505].id_assunto[0]);
+    printf("id ass: %d\n", processos[5505].id_assunto);
     printf("ano: %d\n", processos[5505].ano_eleicao);
 
     /*  

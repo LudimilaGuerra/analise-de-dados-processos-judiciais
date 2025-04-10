@@ -46,7 +46,7 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n) {
 
     for (int i = 0; i < n; i++) {
         // Escreve os campos do processo no formato correto
-        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",\"{%s}\",%d\n",
+        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",%s}\",%d\n",
             processos[i].id,
             processos[i].numero,
             processos[i].data_ajuizamento,
@@ -168,37 +168,46 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
     }
 
         // ID do assunto
-        token = strtok(NULL, "}");
-        limparQuebraLinha(token);
+        char* campo = strtok(NULL, "}");
         p.id_assunto[0] = '\0';
-        if (token != NULL && strlen(token) > 0) {
-            // Se começa com aspas, pula a primeira
-            if (token[0] == '"') {
-                token+=2; // pula a primeira aspa
-                // Remove a última aspa se existir
-                size_t len = strlen(token);
-                if (token[len - 1] == '"') {
-                    token[len - 1] = '\0';
+
+        if (campo != NULL && strlen(campo) > 0) {
+            // Remove quebra de linha e aspas se existirem
+            limparQuebraLinha(campo);
+
+            // Se começar com aspa, pula ela
+            if (campo[0] == '"') {
+                campo+=3;  // pula a primeira aspa
+                size_t len = strlen(campo);
+                if (campo[len - 1] == '"') {
+                    campo[len - 1] = '\0';  // remove a última aspa
                 }
             }
-            
-        // Agora procura as chaves
-        char* inicio = strchr(token, '{');
-        char* fim = strchr(token, '}');
-        if (inicio && fim && fim > inicio) {
-            int tamanho = fim - inicio - 1;
-            
-        } else {
-            // Caso não tenha chaves (ou erro de formato), copia como está
-            strncpy(p.id_assunto, token, sizeof(p.id_assunto) - 1);
-            p.id_assunto[sizeof(p.id_assunto) - 1] = '\0';
-        }
-    }
+            else {
+                campo++;  // pula a primeira chave
+            }
 
-        /* token = strtok(NULL, ",");
-        limparQuebraLinha(token);
-        strncpy(p.id_assunto, token + 1, strlen(token) - 2); // Remove aspas
-        p.id_assunto[strlen(token) - 2] = '\0'; */
+            // Agora procura as chaves
+            char* inicio = strchr(campo, '{');
+            char* fim = strrchr(campo, '}'); // usa strrchr para pegar a última }
+
+            if (inicio && fim && fim > inicio) {
+                int tamanho = fim - inicio - 1;
+                if (tamanho < sizeof(p.id_assunto)) {
+                    strncpy(p.id_assunto, inicio + 2, tamanho);
+                    p.id_assunto[tamanho] = '\0';
+                } else {
+                    printf("Erro: id_assunto muito grande na linha %d.\n", i + 1);
+                    continue;
+                }
+            } else {
+                // Caso não tenha chaves, copia como está
+                strncpy(p.id_assunto, campo, sizeof(p.id_assunto) - 1);
+                p.id_assunto[sizeof(p.id_assunto) - 1] = '\0';
+            }
+        }
+
+        
 
 
         // Ano da eleição

@@ -7,7 +7,7 @@ typedef struct {
     char numero[21];
     char data_ajuizamento[24]; // formato YYYY-MM-DD HH:MM:SS
     char id_classe[20];
-    char id_assunto[20]; // Alterado para string
+    char id_assunto[20];
     int ano_eleicao;
 } Processo;
 
