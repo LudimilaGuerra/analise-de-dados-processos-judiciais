@@ -63,7 +63,20 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n){
 
 //2. Ordenar, em ordem decrescente, o conjunto de dados a partir do atributo “data_ajuizamento”;
 void ordenarPorData(Processo processos[], int n){
+    int i, j;
+    Processo temp;
+    
+    for (i = 0; i < n-1; i++) {
+        for (j = 0; j < n-i-1; j++) {
+            if (strcmp(processos[j].data_ajuizamento, processos[j+1].data_ajuizamento) < 0) {
+                temp = processos[j];
+                processos[j] = processos[j+1];
+                processos[j+1] = temp;
+            }
+        }
+    }
 }
+
 
 //3. Contar quantos processos estão vinculados a um determinado “id_classe”;
 int contarPorClasse(Processo processos[], int n, int id_classe){
