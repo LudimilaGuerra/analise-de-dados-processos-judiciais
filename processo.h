@@ -5,8 +5,8 @@
 typedef struct {
     int id;
     char numero[21];
-    char data_ajuizamento[23]; // formato YYYY-MM-DD HH:MM:SS
-    char id_classe[15];
+    char data_ajuizamento[24]; // formato YYYY-MM-DD HH:MM:SS
+    char id_classe[20];
     int id_assunto[5];
     int qtd_assuntos;
     int ano_eleicao;

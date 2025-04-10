@@ -46,11 +46,13 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n) {
 
     for (int i = 0; i < n; i++) {
         // Escreve os campos do processo no formato correto
-        fprintf(f, "%d,\"%s\",\"%s\",\"{%s}\",{",
+        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",{",
             processos[i].id,
             processos[i].numero,
             processos[i].data_ajuizamento,
             processos[i].id_classe);
+            
+            
 
         // Escreve os assuntos, separados por vírgulas
         for (int j = 0; j < processos[i].qtd_assuntos; j++) {
@@ -132,30 +134,49 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
         token = strtok(NULL, ",");
         limparQuebraLinha(token);
         if (token != NULL && strlen(token) > 0) {
-            strncpy(p.data_ajuizamento, token + 1, strlen(token) - 1); // Remove aspas
+            strncpy(p.data_ajuizamento, token, strlen(token) - 4); // Remove aspas
             p.data_ajuizamento[strlen(token) + 2] = '\0';
         } else {
             strcpy(p.data_ajuizamento, ""); // Inicializa como vazio se não houver valor
         }
 
         // ID da classe
-        token = strtok(NULL, ",");
+        token = strtok(NULL, "}");
         limparQuebraLinha(token);
         p.id_classe[0] = '\0';
+
         if (token != NULL && strlen(token) > 0) {
-            char* inicio = strchr(token, '{');
-            char* fim = strchr(token, '}');
-            if (inicio && fim && fim > inicio) {
-                int tamanho = fim - inicio - 1;
-                if (tamanho < sizeof(p.id_classe)) {
-                    strncpy(p.id_classe, inicio + 1, tamanho);
-                    p.id_classe[tamanho] = '\0';
+            // Se começa com aspas, pula a primeira
+            if (token[0] == '"') {
+                token+=2; // pula a primeira aspa
+                // Remove a última aspa se existir
+                size_t len = strlen(token);
+                if (token[len - 1] == '"') {
+                    token[len - 1] = '\0';
                 }
-            } else {
-                strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
-                p.id_classe[sizeof(p.id_classe) - 1] = '\0';
             }
+            else{
+                token++;
+            }
+
+        // Agora procura as chaves
+        char* inicio = strchr(token, '{');
+        char* fim = strchr(token, '}');
+        if (inicio && fim && fim > inicio) {
+            int tamanho = fim - inicio - 1;
+            if (tamanho < sizeof(p.id_classe)) {
+                strncpy(p.id_classe, inicio + 1, tamanho);
+                p.id_classe[tamanho] = '\0';
+            } else {
+                printf("Erro: id_classe muito grande na linha %d.\n", i + 1);
+                continue;
+            }
+        } else {
+            // Caso não tenha chaves (ou erro de formato), copia como está
+            strncpy(p.id_classe, token, sizeof(p.id_classe) - 1);
+            p.id_classe[sizeof(p.id_classe) - 1] = '\0';
         }
+    }
 
         // ID dos assuntos
         token = strtok(NULL, ",");
