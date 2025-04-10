@@ -9,19 +9,7 @@ int main() {
         printf("Erro ao carregar os processos.\n");
         return -1;
     }
-    printf("id: %d\n", processos[5505].id);
-    printf("numero: %s\n", processos[5505].numero);
-    printf("data: %s\n", processos[5505].data_ajuizamento);
-    printf("classe: %s\n", processos[5505].id_classe);
-    printf("id ass: %d\n", processos[5505].id_assunto);
-    printf("ano: %d\n", processos[5505].ano_eleicao);
-
-    /*  
-     *  // Exemplo de uso das funções
-     *  
-     *  printf("ID do primeiro processo: %d\n", processos[0].id);
-     *  printf("Número do primeiro processo: %s\n", processos[0].numero); 
-     */
+   
     printf("Total de processos carregados: %d\n", n);
     int escolha = 0;
     printf("Escolha uma opção:\n");
