@@ -25,9 +25,7 @@ int main() {
     switch (escolha) {
         case 1:
             ordenarPorId(processos, 0, n - 1);
-            
             salvarOrdenadoPorId("processos_ordenados_por_id.csv", processos, n);
-            
             printf("Processos ordenados por ID. Novo arquivo criado\n");
             break; 
         
