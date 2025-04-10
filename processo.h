@@ -6,7 +6,7 @@ typedef struct {
     int id;
     char numero[21];
     char data_ajuizamento[20]; // formato YYYY-MM-DD HH:MM:SS
-    int id_classe; 
+    int id_classe;
     int id_assunto[10]; // assume no máximo 10 assuntos
     int qtd_assuntos;
     int ano_eleicao;
@@ -22,6 +22,7 @@ int contarAssuntosUnicos(Processo processos[], int n);
 void listarMultiplosAssuntos(Processo processos[], int n);
 int calcularDiasTramitando(Processo p, const char* data_atual);
 int carregarProcessos(const char* nomeArquivo, Processo processos[], int max);
+void limparQuebraLinha(char* str);
 
 
 

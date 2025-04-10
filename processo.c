@@ -42,18 +42,23 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n){
     }
 
     //cabeçalho
-    fprintf(f, "id,numero,data_ajuizamento,id_classe,id_assunto,ano_eleicao\n");
+    fprintf(f, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
 
-    for (int i = 0; i < n; i++)
-    {
-        fprintf(f, "%d,%s,%s,{%d},{", processos[i].id, processos[i].numero, processos[i].data_ajuizamento, processos[i].id_classe);
-        for (int j = 0; j < processos[i].qtd_assuntos; j++)
-        {
+    for (int i = 0; i < n; i++) {
+        fprintf(f, "%d,\"%s\",%s,{%d},{",
+                processos[i].id,
+                processos[i].numero,
+                processos[i].data_ajuizamento,
+                processos[i].id_classe);
+
+        //assuntos
+        for (int j = 0; j < processos[i].qtd_assuntos; j++) {
             fprintf(f, "%d", processos[i].id_assunto[j]);
             if (j < processos[i].qtd_assuntos - 1) {
                 fprintf(f, ",");
             }
         }
+
         fprintf(f, "},%d\n", processos[i].ano_eleicao);
     }
     fclose(f);
@@ -118,12 +123,15 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
 
         // Numero
         token = strtok(NULL, ",");
-        strcpy(p.numero, token + 1); // Remove a aspa inicial
-        p.numero[strlen(p.numero) - 1] = '\0'; // Remove a aspa final
+        limparQuebraLinha(token);
+        strncpy(p.numero, token + 1, strlen(token) - 2); // tira aspas
+        p.numero[strlen(token) - 2] = '\0';
 
         // Data ajuizamento
         token = strtok(NULL, ",");
+        limparQuebraLinha(token);
         strcpy(p.data_ajuizamento, token);
+        
 
         // ID classe (entre { })
         token = strtok(NULL, ",");
@@ -157,3 +165,9 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
     return i; // número de processos lidos
 }
 
+void limparQuebraLinha(char* str) {
+    size_t len = strlen(str);
+    while (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r')) {
+        str[--len] = '\0';
+    }
+}
