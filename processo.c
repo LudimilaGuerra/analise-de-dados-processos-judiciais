@@ -46,24 +46,13 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n) {
 
     for (int i = 0; i < n; i++) {
         // Escreve os campos do processo no formato correto
-        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",{",
+        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",\"{%s}\",%d\n",
             processos[i].id,
             processos[i].numero,
             processos[i].data_ajuizamento,
-            processos[i].id_classe);
-            
-            
-
-        // Escreve os assuntos, separados por vírgulas
-        for (int j = 0; j < processos[i].qtd_assuntos; j++) {
-            fprintf(f, "%d", processos[i].id_assunto[j]);
-            if (j < processos[i].qtd_assuntos - 1) {
-                fprintf(f, ",");
-            }
-        }
-
-        // Fecha o campo de assuntos e escreve o ano de eleição
-        fprintf(f, "},%d\n", processos[i].ano_eleicao);
+            processos[i].id_classe,
+            processos[i].id_assunto,
+            processos[i].ano_eleicao);
     }
 
     fclose(f);
@@ -135,7 +124,7 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
         limparQuebraLinha(token);
         if (token != NULL && strlen(token) > 0) {
             strncpy(p.data_ajuizamento, token, strlen(token) - 4); // Remove aspas
-            p.data_ajuizamento[strlen(token) + 2] = '\0';
+            p.data_ajuizamento[strlen(token) - 4] = '\0';
         } else {
             strcpy(p.data_ajuizamento, ""); // Inicializa como vazio se não houver valor
         }
@@ -178,20 +167,39 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
         }
     }
 
-        // ID dos assuntos
-        token = strtok(NULL, ",");
-        p.qtd_assuntos = 0;
-        if (token != NULL && token[0] == '{') {
-            token++;
-            char* fim = strchr(token, '}');
-            if (fim) *fim = '\0';
-
-            char* sub = strtok(token, ",");
-            while (sub != NULL && p.qtd_assuntos < 10) {
-                p.id_assunto[p.qtd_assuntos++] = atoi(sub);
-                sub = strtok(NULL, ",");
+        // ID do assunto
+        token = strtok(NULL, "}");
+        limparQuebraLinha(token);
+        p.id_assunto[0] = '\0';
+        if (token != NULL && strlen(token) > 0) {
+            // Se começa com aspas, pula a primeira
+            if (token[0] == '"') {
+                token+=2; // pula a primeira aspa
+                // Remove a última aspa se existir
+                size_t len = strlen(token);
+                if (token[len - 1] == '"') {
+                    token[len - 1] = '\0';
+                }
             }
+            
+        // Agora procura as chaves
+        char* inicio = strchr(token, '{');
+        char* fim = strchr(token, '}');
+        if (inicio && fim && fim > inicio) {
+            int tamanho = fim - inicio - 1;
+            
+        } else {
+            // Caso não tenha chaves (ou erro de formato), copia como está
+            strncpy(p.id_assunto, token, sizeof(p.id_assunto) - 1);
+            p.id_assunto[sizeof(p.id_assunto) - 1] = '\0';
         }
+    }
+
+        /* token = strtok(NULL, ",");
+        limparQuebraLinha(token);
+        strncpy(p.id_assunto, token + 1, strlen(token) - 2); // Remove aspas
+        p.id_assunto[strlen(token) - 2] = '\0'; */
+
 
         // Ano da eleição
         token = strtok(NULL, ",\n");
