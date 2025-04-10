@@ -3,8 +3,8 @@
 #include "processo.h"
 
 int main() {
-    Processo processos[20000];
-    int n = carregarProcessos("processo_043_202409032338.csv", processos, 20000);
+    Processo processos[MAX_PROCESSOS];
+    int n = carregarProcessos("processo_043_202409032338.csv", processos, MAX_PROCESSOS);
     if (n <= 0) {
         printf("Erro ao carregar os processos.\n");
         return -1;
