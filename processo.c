@@ -132,8 +132,8 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
         limparQuebraLinha(token);
         strcpy(p.data_ajuizamento, token);
         
-
         // ID classe (entre { })
+        //! A classe está quebrando o codigo
         token = strtok(NULL, ",");
         sscanf(token, "{%d}", &p.id_classe);
 
