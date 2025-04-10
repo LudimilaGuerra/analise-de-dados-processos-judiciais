@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "processo.h"
 
 void ordenarPorId(Processo processos[], int n){
@@ -7,7 +8,22 @@ void ordenarPorId(Processo processos[], int n){
 }
 
 void ordenarPorData(Processo processos[], int n){
-    //2. Ordenar, em ordem decrescente, o conjunto de dados a partir do atributo “data_ajuizamento”;
+    
+    if (n <= 1) return;
+    
+    int i, j;
+    Processo temp;
+    
+    for (i = 0; i < n-1; i++) {
+        for (j = 0; j < n-i-1; j++) {
+            if (strcmp(processos[j].data_ajuizamento, processos[j+1].data_ajuizamento) < 0) {
+                temp = processos[j];
+                processos[j] = processos[j+1];
+                processos[j+1] = temp;
+            }
+        }
+    }
+}
 }
 
 int contarPorClasse(Processo processos[], int n, int id_classe){
@@ -49,6 +65,7 @@ int main() {
     {
         printf("Erro no arquivo");
     }
+
     
     
 }
