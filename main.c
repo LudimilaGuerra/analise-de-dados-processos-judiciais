@@ -31,7 +31,8 @@ int main() {
         
     //Os cases são feitos assim pra facilitar a leitura, mas não é necessário fazer assim, só pra ficar mais fácil de entender o que cada um faz
         case 2:
-            ordenarPorData(processos, n);
+            ordenarPorData(processos, 0, n - 1); 
+            salvarOrdenadoPorData("processos_ordenados_por_data.csv", processos, n); 
             printf("Processos ordenados por data. Novo arquivo criado\n");
             break;
         case 3:{
