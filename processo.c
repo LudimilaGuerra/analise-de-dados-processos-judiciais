@@ -115,7 +115,35 @@ int contarPorClasse(Processo processos[], int n, const char* id_classe){
 }
 
 //4. Identificar quantos “id_assuntos” constam nos processos presentes na base de dados;
-int contarAssuntosUnicos(Processo processos[], int n){
+int contarAssuntosUnicos(Processo processos[], int n) {
+    char assuntosUnicos[1000][20]; // Array para armazenar assuntos únicos (limite de 1000 assuntos)
+    int totalUnicos = 0;
+
+    for (int i = 0; i < n; i++) {
+        char* token = strtok(processos[i].id_assunto, ","); // Divide os assuntos por vírgula
+        while (token != NULL) {
+            int encontrado = 0;
+
+            // Verifica se o assunto já está no array de únicos
+            for (int j = 0; j < totalUnicos; j++) {
+                if (strcmp(assuntosUnicos[j], token) == 0) {
+                    encontrado = 1;
+                    break;
+                }
+            }
+
+            // Se não foi encontrado, adiciona ao array de únicos
+            if (!encontrado) {
+                strncpy(assuntosUnicos[totalUnicos], token, sizeof(assuntosUnicos[totalUnicos]) - 1);
+                assuntosUnicos[totalUnicos][sizeof(assuntosUnicos[totalUnicos]) - 1] = '\0';
+                totalUnicos++;
+            }
+
+            token = strtok(NULL, ","); // Próximo assunto
+        }
+    }
+
+    return totalUnicos;
 }
 
 //5. Listar todos os processos que estão vinculados a mais de um assunto; e
