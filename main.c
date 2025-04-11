@@ -2,26 +2,6 @@
 #include <stdlib.h>
 #include "processo.h"
 
-void contar_processos_por_classe(Processo *processos, int total_processos) {
-    int contagem[1000] = {0}; // Supondo no máximo 1000 id_classe diferentes
-    int max_id_classe = 0;
-
-    for (int i = 0; i < total_processos; i++) {
-        int id = processos[i].id_classe;
-        contagem[id]++;
-        if (id > max_id_classe) {
-            max_id_classe = id;
-        }
-    }
-
-    printf("\nQuantidade de processos por id_classe:\n");
-    for (int i = 0; i <= max_id_classe; i++) {
-        if (contagem[i] > 0) {
-            printf("id_classe %d: %d processo(s)\n", i, contagem[i]);
-        }
-    }
-}
-
 int main() {
     Processo processos[20000];
     int n = carregarProcessos("processo_043_202409032338.csv", processos, 20000);
