@@ -58,23 +58,34 @@ void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n) {
     fclose(f);
 }
 
-
 //2. Ordenar, em ordem decrescente, o conjunto de dados a partir do atributo “data_ajuizamento”;
-void ordenarPorData(Processo processos[], int n){
-    int i, j;
-    Processo temp;
-    
-    for (i = 0; i < n-1; i++) {
-        for (j = 0; j < n-i-1; j++) {
-            if (strcmp(processos[j].data_ajuizamento, processos[j+1].data_ajuizamento) < 0) {
-                temp = processos[j];
-                processos[j] = processos[j+1];
-                processos[j+1] = temp;
-            }
-        }
+void ordenarPorData(Processo processos[], int esq, int dir) {
+    if (esq < dir) {
+        int pivot = particaoData(processos, esq, dir);
+        ordenarPorData(processos, esq, pivot - 1);
+        ordenarPorData(processos, pivot, dir);
     }
 }
 
+//Função de partição para datas (decrescente)
+int particaoData(Processo V[], int esq, int dir) {
+    char* pivot = V[(esq + dir) / 2].data_ajuizamento;
+    int i = esq;
+    int j = dir;
+
+    while (i <= j) {
+        //Comparação invertida para ordem decrescente
+        while (strcmp(V[i].data_ajuizamento, pivot) > 0) i++;
+        while (strcmp(V[j].data_ajuizamento, pivot) < 0) j--;
+
+        if (i <= j) {
+            swap(&V[i], &V[j]);
+            i++;
+            j--;
+        }
+    }
+    return i;
+}
 
 //3. Contar quantos processos estão vinculados a um determinado “id_classe”;
 int contarPorClasse(Processo processos[], int n, const char* id_classe){
