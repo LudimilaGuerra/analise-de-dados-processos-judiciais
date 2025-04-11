@@ -45,7 +45,7 @@ int main() {
         }
         case 4:{
             int total_assuntos = contarAssuntosUnicos(processos, n);
-            printf("Total de assuntos únicos: %d\n", total_assuntos);
+            printf("Total de assuntos unicos: %d\n", total_assuntos);
             break;
         }
         case 5:
@@ -57,7 +57,7 @@ int main() {
             scanf("%s", data_atual);
             for (int i = 0; i < n; i++) {
                 int dias = calcularDiasTramitando(processos[i], data_atual);
-                printf("Processo ID %d está em tramitação há %d dias.\n", processos[i].id, dias);
+                printf("Processo ID %d está em tramitação ha %d dias.\n", processos[i].id, dias);
             }
             break;
         }
