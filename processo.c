@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "processo.h"
+#include <time.h>
 
 //1. Ordenar, em ordem crescente, o conjunto de dados a partir do atributo “id”;
 void ordenarPorId(Processo processos[], int esq, int dir){
@@ -153,6 +154,7 @@ int contarAssuntosUnicos(Processo processos[], int n) {
     return totalUnicos;
 }
 
+=======
 //5. Listar todos os processos que estão vinculados a mais de um assunto; e
 void listarMultiplosAssuntos(Processo processos[], int total)
  {
@@ -174,6 +176,7 @@ int calcularDiasTramitando(Processo p, const char* data_atual){
     //É mais usável se verificando todo o arquivo de processos em busca do ID, mas é mais fácil criar passando Processo p, const char* data_atual
     //Passar como parâmetro a data atual ou usar a biblioteca time.h pra fazer isso automaticamente
 }
+
 
 int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
     FILE* f = fopen(nomeArquivo, "r");
@@ -275,7 +278,7 @@ int carregarProcessos(const char* nomeArquivo, Processo processos[], int max) {
             if (inicio && fim && fim > inicio) {
                 int tamanho = fim - inicio - 1;
                 if (tamanho < sizeof(p.id_assunto)) {
-                    strncpy(p.id_assunto, inicio + 2, tamanho);
+                    strncpy(p.id_assunto, inicio + 1, tamanho); // Apenas +1 para pular '{'
                     p.id_assunto[tamanho] = '\0';
                 } else {
                     printf("Erro: id_assunto muito grande na linha %d.\n", i + 1);
@@ -312,3 +315,60 @@ void limparQuebraLinha(char* str) {
         str[--len] = '\0';
     }
 }
+
+
+//5. Listar todos os processos que estão vinculados a mais de um assunto; e
+void listarMultiplosAssuntos(Processo processos[], int total)
+ {
+    printf("\nProcessos com mais de um assunto:\n");
+    printf("==================================\n");
+    for (int i = 0; i < total; i++) {
+        if (strchr(processos[i].id_assunto, ',') != NULL) {
+            printf("ID: %d | Numero: %s | Assuntos: %s\n",
+                   processos[i].id,
+                   processos[i].numero,
+                   processos[i].id_assunto);
+        }
+    }
+}
+
+//6. Indicar a quantos dias um processo está em tramitação na justiça
+int calcularDiasTramitando(const char* data_ajuizamento, const char* data_atual) {
+    struct tm dt_inicio = {0};
+    struct tm dt_final = {0};
+    int ano_i, mes_i, dia_i;
+    int dia_f, mes_f, ano_f;
+
+    // data_ajuizamento: formato do CSV -> "aaaa-mm-dd"
+    if (sscanf(data_ajuizamento, "%d-%d-%d", &ano_i, &mes_i, &dia_i) != 3) {
+        printf("Erro: formato inválido de data de ajuizamento.\n");
+        return -1;
+    }
+
+    // data_atual: formato digitado pelo usuário -> "dd/mm/aaaa"
+    if (sscanf(data_atual, "%d/%d/%d", &dia_f, &mes_f, &ano_f) != 3) {
+        printf("Erro: formato inválido da data atual.\n");
+        return -1;
+    }
+
+    dt_inicio.tm_year = ano_i - 1900;
+    dt_inicio.tm_mon = mes_i - 1;
+    dt_inicio.tm_mday = dia_i;
+
+    dt_final.tm_year = ano_f - 1900;
+    dt_final.tm_mon = mes_f - 1;
+    dt_final.tm_mday = dia_f;
+
+    time_t t_inicio = mktime(&dt_inicio);
+    time_t t_final = mktime(&dt_final);
+
+    if (t_inicio == -1 || t_final == -1) {
+        printf("Erro ao converter datas para timestamp.\n");
+        return -1;
+    }
+
+    double segundos = difftime(t_final, t_inicio);
+    return (int)(segundos / (60 * 60 * 24));
+}
+=======
+
