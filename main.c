@@ -36,7 +36,7 @@ int main() {
             printf("Processos ordenados por data. Novo arquivo criado\n");
             break;
             
-            case 3:
+            case 3:{
             char id_classe[10];
     printf("Digite o id_classe que deseja buscar: ");
     scanf("%s", id_classe);
