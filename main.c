@@ -40,7 +40,7 @@ int main() {
             printf("Digite o ID da classe: ");
             scanf("%s", &id_classe);
             int count = contarPorClasse(processos, n, id_classe);
-            printf("Total de processos na classe %d: %d\n", id_classe, count);
+            printf("Total de processos na classe %s: %d\n", id_classe, count);
             break;
         }
         case 4:{
@@ -53,7 +53,7 @@ int main() {
             break;
         case 6:{
             char data_atual[11];
-            printf("Digite a data atual (dd/mm/aaaa): ");
+            printf("Digite a data atual (aaaa-mm-dd): ");
             scanf("%s", data_atual);
             for (int i = 0; i < n; i++) {
                 int dias = calcularDiasTramitando(processos[i], data_atual);
