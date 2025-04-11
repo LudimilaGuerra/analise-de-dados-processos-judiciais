@@ -23,6 +23,6 @@ void listarMultiplosAssuntos(Processo processos[], int n);
 int calcularDiasTramitando(Processo p, const char* data_atual);
 int carregarProcessos(const char* nomeArquivo, Processo processos[], int max);
 void limparQuebraLinha(char* str);
-void listar_processos_varios_assuntos(Processo processos[], int total);
+void listarMultiplosAssuntos(Processo processos[], int total);
 
 #endif
