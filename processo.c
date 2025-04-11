@@ -86,6 +86,29 @@ int particaoData(Processo V[], int esq, int dir) {
     }
     return i;
 }
+void salvarOrdenadoPorData(const char* nomeArquivo, Processo processos[], int n) {
+    FILE* f = fopen(nomeArquivo, "w");
+    if (f == NULL) {
+        printf("Erro ao criar arquivo %s.\n", nomeArquivo);
+        return;
+    }
+
+    // Escreve o cabeçalho do CSV (igual ao original)
+    fprintf(f, "\"id\",\"numero\",\"data_ajuizamento\",\"id_classe\",\"id_assunto\",\"ano_eleicao\"\n");
+
+    // Escreve cada processo no arquivo
+    for (int i = 0; i < n; i++) {
+        fprintf(f, "%d,\"%s\",\"%s.000\",\"{%s}\",\"{%s}\",%d\n",
+            processos[i].id,
+            processos[i].numero,
+            processos[i].data_ajuizamento,
+            processos[i].id_classe,
+            processos[i].id_assunto,
+            processos[i].ano_eleicao);
+    }
+
+    fclose(f);
+}
 
 //3. Contar quantos processos estão vinculados a um determinado “id_classe”;
 int contarPorClasse(Processo processos[], int n, const char* id_classe){
