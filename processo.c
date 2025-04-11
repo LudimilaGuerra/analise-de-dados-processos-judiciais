@@ -119,8 +119,20 @@ int contarAssuntosUnicos(Processo processos[], int n){
 }
 
 //5. Listar todos os processos que estão vinculados a mais de um assunto; e
-void listarMultiplosAssuntos(Processo processos[], int n){
+void listarMultiplosAssuntos(Processo processos[], int total)
+ {
+    printf("\nProcessos com mais de um assunto:\n");
+    printf("==================================\n");
+    for (int i = 0; i < total; i++) {
+        if (strchr(processos[i].id_assunto, ',') != NULL) {
+            printf("ID: %d | Numero: %s | Assuntos: %s}\"\n",
+                   processos[i].id,
+                   processos[i].numero,
+                   processos[i].id_assunto);
+        }
+    }
 }
+
 
 //6. Indicar a quantos dias um processo está em tramitação na justiça.
 int calcularDiasTramitando(Processo p, const char* data_atual){
@@ -263,18 +275,5 @@ void limparQuebraLinha(char* str) {
     size_t len = strlen(str);
     while (len > 0 && (str[len - 1] == '\n' || str[len - 1] == '\r')) {
         str[--len] = '\0';
-    }
-}
-void listarMultiplosAssuntos(Processo processos[], int total)
- {
-    printf("\nProcessos com mais de um assunto:\n");
-    printf("==================================\n");
-    for (int i = 0; i < total; i++) {
-        if (strchr(processos[i].id_assunto, ',') != NULL) {
-            printf("ID: %d | Numero: %s | Assuntos: %s\n",
-                   processos[i].id,
-                   processos[i].numero,
-                   processos[i].id_assunto);
-        }
     }
 }

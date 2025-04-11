@@ -16,13 +16,13 @@ void swap(Processo *a, Processo *b);
 int particao(Processo V[], int esq, int dir);
 void salvarOrdenadoPorId(const char* nomeArquivo, Processo processos[], int n);
 void ordenarPorData(Processo processos[], int esq, int dir); 
+void salvarOrdenadoPorData(const char* nomeArquivo, Processo processos[], int n);
 int particaoData(Processo V[], int esq, int dir); 
 int contarPorClasse(Processo processos[], int n, const char* id_classe);
 int contarAssuntosUnicos(Processo processos[], int n);
-void listarMultiplosAssuntos(Processo processos[], int n);
+void listarMultiplosAssuntos(Processo processos[], int total);
 int calcularDiasTramitando(Processo p, const char* data_atual);
 int carregarProcessos(const char* nomeArquivo, Processo processos[], int max);
 void limparQuebraLinha(char* str);
-void listarMultiplosAssuntos(Processo processos[], int total);
 
 #endif
