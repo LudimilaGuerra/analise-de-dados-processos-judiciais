@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "processo.h"
+#include <time.h>
+#include <string.h>
 
 int main() {
     Processo processos[20000];
@@ -32,7 +34,7 @@ int main() {
     //Os cases são feitos assim pra facilitar a leitura, mas não é necessário fazer assim, só pra ficar mais fácil de entender o que cada um faz
         case 2:
             ordenarPorData(processos, 0, n - 1); 
-            salvarOrdenadoPorData("processos_ordenados_por_data.csv", processos, n); 
+            salvarOrdenadoPorId("processos_ordenados_por_data.csv", processos, n); 
             printf("Processos ordenados por data. Novo arquivo criado\n");
             break;
         case 3:{
@@ -51,16 +53,21 @@ int main() {
         case 5:
             listarMultiplosAssuntos(processos, n);
             break;
-        case 6:{
-            char data_atual[11];
-            printf("Digite a data atual (dd/mm/aaaa): ");
-            scanf("%s", data_atual);
-            for (int i = 0; i < n; i++) {
-                int dias = calcularDiasTramitando(processos[i], data_atual);
-                printf("Processo ID %d está em tramitação há %d dias.\n", processos[i].id, dias);
+            case 6:{
+                char data_atual[11];
+                printf("Digite a data atual (dd/mm/aaaa): ");
+                scanf("%10s", data_atual);
+
+                for (int i = 0; i < n; i++) {
+                    int dias = calcularDiasTramitando(processos[i].data_ajuizamento, data_atual);
+                    if (dias >= 0) {
+                     printf("Processo ID %d está em tramitação há %d dias.\n", processos[i].id, dias);
+                    } else {
+                    printf("Processo ID %d tem data inválida.\n", processos[i].id);
+                    }
+    
+                    break;
             }
-            break;
-        }
         case 7:
             printf("Saindo...\n");
             return 0;
@@ -69,4 +76,5 @@ int main() {
             break;
     }
         return 0;
+}
 }
