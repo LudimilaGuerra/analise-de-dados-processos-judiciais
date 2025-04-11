@@ -35,17 +35,18 @@ int main() {
             salvarOrdenadoPorData("processos_ordenados_por_data.csv", processos, n); 
             printf("Processos ordenados por data. Novo arquivo criado\n");
             break;
-        case 3:{
+            
+            case 3:{
             char id_classe[10];
-            printf("Digite o ID da classe: ");
-            scanf("%s", &id_classe);
-            int count = contarPorClasse(processos, n, id_classe);
-            printf("Total de processos na classe %d: %d\n", id_classe, count);
-            break;
+    printf("Digite o id_classe que deseja buscar: ");
+    scanf("%s", id_classe);
+    int quantidade = contarPorClasse(processos, n, id_classe);
+    printf("Total de processos com id_classe %s: %d\n", id_classe, quantidade);
+    break;
         }
         case 4:{
             int total_assuntos = contarAssuntosUnicos(processos, n);
-            printf("Total de assuntos únicos: %d\n", total_assuntos);
+            printf("Total de assuntos unicos: %d\n", total_assuntos);
             break;
         }
         case 5:
@@ -57,7 +58,7 @@ int main() {
             scanf("%s", data_atual);
             for (int i = 0; i < n; i++) {
                 int dias = calcularDiasTramitando(processos[i], data_atual);
-                printf("Processo ID %d está em tramitação há %d dias.\n", processos[i].id, dias);
+                printf("Processo ID %d está em tramitação ha %d dias.\n", processos[i].id, dias);
             }
             break;
         }
