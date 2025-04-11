@@ -265,7 +265,7 @@ void limparQuebraLinha(char* str) {
         str[--len] = '\0';
     }
 }
-void listar_processos_varios_assuntos(Processo processos[], int total)
+void listarMultiplosAssuntos(Processo processos[], int total)
  {
     printf("\nProcessos com mais de um assunto:\n");
     printf("==================================\n");
