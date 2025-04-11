@@ -37,8 +37,12 @@ int main() {
             break;
             
             case 3:
-            contar_processos_por_classe(processos, total_processos);
-            break;
+            char id_classe[10];
+    printf("Digite o id_classe que deseja buscar: ");
+    scanf("%s", id_classe);
+    int quantidade = contarPorClasse(processos, n, id_classe);
+    printf("Total de processos com id_classe %s: %d\n", id_classe, quantidade);
+    break;
         }
         case 4:{
             int total_assuntos = contarAssuntosUnicos(processos, n);
