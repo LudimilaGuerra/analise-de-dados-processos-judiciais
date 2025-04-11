@@ -111,7 +111,14 @@ void salvarOrdenadoPorData(const char* nomeArquivo, Processo processos[], int n)
 }
 
 //3. Contar quantos processos estão vinculados a um determinado “id_classe”;
-int contarPorClasse(Processo processos[], int n, const char* id_classe){
+int contarPorClasse(Processo processos[], int n, const char* id_classe) {
+    int contador = 0;
+    for (int i = 0; i < n; i++) {
+        if (strcmp(processos[i].id_classe, id_classe) == 0) {
+            contador++;
+        }
+    }
+    return contador;
 }
 
 //4. Identificar quantos “id_assuntos” constam nos processos presentes na base de dados;
