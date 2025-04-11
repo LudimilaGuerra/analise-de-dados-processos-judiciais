@@ -8,7 +8,7 @@ typedef struct {
     char data_ajuizamento[24]; // formato YYYY-MM-DD HH:MM:SS
     char id_classe[20];
     char id_assunto[20];
-    int ano_eleicao;
+    int ano_eleicao; 
 } Processo;
 
 void ordenarPorId(Processo processos[], int esq, int dir);
@@ -20,7 +20,7 @@ int particaoData(Processo V[], int esq, int dir);
 int contarPorClasse(Processo processos[], int n, const char* id_classe);
 int contarAssuntosUnicos(Processo processos[], int n);
 void listarMultiplosAssuntos(Processo processos[], int n);
-int calcularDiasTramitando(Processo p, const char* data_atual);
+int calcularDiasTramitando(const char* data_ajuizamento, const char* data_atual);
 int carregarProcessos(const char* nomeArquivo, Processo processos[], int max);
 void limparQuebraLinha(char* str);
 void listarMultiplosAssuntos(Processo processos[], int total);
